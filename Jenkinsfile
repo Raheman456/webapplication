@@ -17,9 +17,9 @@ pipeline {
         stage('Publish to Nexus') {
             steps {
                 script {
-                    def nexusUrl = 'http://nexus-server-url'  // Replace with your Nexus URL
-                    def nexusRepository = 'maven-releases'  // Replace with your Nexus repository
-                    def nexusCredentialsId = 'nexus-credentials'  // Jenkins credentials for Nexus
+                    def nexusUrl = 'http://13.210.249.199:8081/'  // Replace with your Nexus URL
+                    def nexusRepository = 'webapplication'  // Replace with your Nexus repository
+                    def nexusCredentialsId = 'nexus'  // Jenkins credentials for Nexus
 
                     def artifactVersion = sh(script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
                     def artifactFile = sh(script: 'find target/ -name "*.war" -type f', returnStdout: true).trim()
@@ -43,8 +43,8 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 script {
-                    def tomcatUrl = 'http://tomcat-server-url'  // Replace with your Tomcat URL
-                    def tomcatManagerCredentialsId = 'tomcat-credentials'  // Jenkins credentials for Tomcat Manager
+                    def tomcatUrl = 'http://3.27.185.94:8082/'  // Replace with your Tomcat URL
+                    def tomcatManagerCredentialsId = 'Tomcat'  // Jenkins credentials for Tomcat Manager
 
                     sh "curl --user tomcat-user:tomcat-password --upload-file target/onlinebookstore.war ${tomcatUrl}/manager/text/deploy?path=/onlinebookstore&update=true"
                 }
