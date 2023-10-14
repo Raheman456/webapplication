@@ -20,30 +20,44 @@ pipeline {
     }
 
         stage('Publish to Nexus') {
-            steps {
-                script {
-                    def nexusUrl = 'http://13.210.249.199:8081/repository/webapplication'  // Replace with your Nexus URL
-                    def nexusRepository = 'webapplication'  // Replace with your Nexus repository
-                    def nexusCredentialsId = 'nexus'  // Jenkins credentials for Nexus
+    steps {
+        script {
+            def nexusUrl = 'http://13.210.249.199:8081/repository/webapplication'  // Corrected Nexus URL
+            def nexusRepository = 'webapplication'  // Replace with your Nexus repository
+            def nexusCredentialsId = 'nexus'  // Jenkins credentials for Nexus
 
-                    def artifactVersion = sh(script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
-                    def artifactFile = sh(script: 'find target/ -name "*.war" -type f', returnStdout: true).trim()
+            def artifactVersion
+            def artifactFile
 
-                    nexusArtifactUploader(
-                        nexusVersion: 'nexus3',
-                        protocol: 'http',
-                        nexusUrl: nexusUrl,
-                        groupId: 'onlinebookstore',
-                        version: "${artifactVersion}",
-                        repository: nexusRepository,
-                        credentialsId: nexusCredentialsId,
-                        artifacts: [
-                            [artifactId: 'onlinebookstore', classifier: '', file: artifactFile]
-                        ]
-                    )
-                }
+            // Try to retrieve the version and artifact file
+            try {
+                artifactVersion = sh(script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
+                artifactFile = sh(script: 'find target/ -name "*.war" -type f', returnStdout: true).trim()
+            } catch (Exception e) {
+                error("Failed to retrieve version and artifact file: ${e.message}")
+            }
+
+            // Check if version and artifact file were successfully obtained
+            if (artifactVersion && artifactFile) {
+                nexusArtifactUploader(
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: nexusUrl,
+                    groupId: 'onlinebookstore',
+                    version: "${artifactVersion}",
+                    repository: nexusRepository,
+                    credentialsId: nexusCredentialsId,
+                    artifacts: [
+                        [artifactId: 'onlinebookstore', classifier: '', file: artifactFile]
+                    ]
+                )
+            } else {
+                error("Version or artifact file not found")
             }
         }
+    }
+}
+
 
         stage('Deploy to Tomcat') {
             steps {
