@@ -13,7 +13,7 @@ pipeline {
         // Use the configured Maven tool
         withMaven(
             maven: 'Maven',  // Use the name you provided when configuring Maven in Jenkins
-            jdk: 'JDK',  // You may also need to configure a JDK in Jenkins
+            // jdk: 'JDK',  // You may also need to configure a JDK in Jenkins
         ) {
             sh 'mvn clean install'
         }
