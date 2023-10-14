@@ -22,7 +22,7 @@ pipeline {
         stage('Publish to Nexus') {
     steps {
         script {
-            def nexusUrl = 'http://13.210.249.199:8081/repository/webapplication'  // Corrected Nexus URL
+            def nexusUrl = 'http://3.27.185.94:8081/repository/webapplication'  // Corrected Nexus URL
             def nexusRepository = 'webapplication'  // Replace with your Nexus repository
             def nexusCredentialsId = 'nexus'  // Jenkins credentials for Nexus
 
@@ -57,7 +57,6 @@ pipeline {
         }
     }
 }
-
 
         stage('Deploy to Tomcat') {
             steps {
