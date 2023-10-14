@@ -15,7 +15,7 @@ pipeline {
             maven: 'Maven',  // Use the name you provided when configuring Maven in Jenkins
             // jdk: 'JDK',  // You may also need to configure a JDK in Jenkins
         ) {
-            sh 'clean install'
+            sh 'mvn clean install'
         }
     }
 }
