@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        // Name should match the one you configured in the Global Tool Configuration
+        maven 'Maven'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -10,8 +15,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                deleteDir()
-                sh '/opt/apache-maven-3.6.3/bin/mvn clean install'
+                sh 'mvn clean install'
         }
     }
 
