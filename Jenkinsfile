@@ -25,7 +25,8 @@ pipeline {
                     def warFileName = 'target/onlinebookstore.war'  // The path to your WAR file
 
                     if (fileExists(warFileName)) {
-                        sh "curl --user tomcat-user:tomcat-password --upload-file ${warFileName} ${tomcatUrl}/manager/text/deploy?path=/onlinebookstore&update=true"
+                       sh "curl --user tomcat-user:tomcat-password --upload-file ${warFileName}"
+                       cp  ${warFileName} /opt/apache-tomcat-10.1.14/webapps
                     } else {
                         error("WAR file not found")
                     }
