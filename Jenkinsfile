@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        // Name should match the one you configured in the Global Tool Configuration
-        maven 'Maven'
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -15,22 +10,22 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean install'
+                script {
+                    def mavenHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+                    sh "${mavenHome}/bin/mvn clean package"
+                }
+            }
         }
-    }
 
-      
         stage('Deploy to Tomcat') {
             steps {
                 script {
                     def tomcatUrl = 'http://3.27.185.94:8082/'  // Replace with your Tomcat URL
                     def tomcatManagerCredentialsId = 'Tomcat'  // Jenkins credentials for Tomcat Manager
-                    def warFileName = 'onlinebookstore.war'  // Name of your WAR file
+                    def warFileName = 'target/onlinebookstore.war'  // The path to your WAR file
 
-                    def warFile = sh(script: "find target/ -name '${warFileName}' -type f", returnStdout: true).trim()
-
-                    if (warFile) {
-                        sh "curl --user tomcat-user:tomcat-password --upload-file ${warFile} ${tomcatUrl}/manager/text/deploy?path=/onlinebookstore&update=true"
+                    if (fileExists(warFileName)) {
+                        sh "curl --user tomcat-user:tomcat-password --upload-file ${warFileName} ${tomcatUrl}/manager/text/deploy?path=/onlinebookstore&update=true"
                     } else {
                         error("WAR file not found")
                     }
@@ -46,5 +41,14 @@ pipeline {
         failure {
             echo 'Deployment to Tomcat failed'
         }
+    }
+}
+
+def fileExists(filePath) {
+    try {
+        sh "test -e ${filePath}"
+        return true
+    } catch (Exception ignored) {
+        return false
     }
 }
