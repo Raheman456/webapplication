@@ -19,13 +19,21 @@ pipeline {
         }
     }
 
-       stage('Deploy to Tomcat') {
+      
+        stage('Deploy to Tomcat') {
             steps {
                 script {
                     def tomcatUrl = 'http://3.27.185.94:8082/'  // Replace with your Tomcat URL
                     def tomcatManagerCredentialsId = 'Tomcat'  // Jenkins credentials for Tomcat Manager
+                    def warFileName = 'onlinebookstore.war'  // Name of your WAR file
 
-                    sh "curl --user tomcat-user:tomcat-password --upload-file target/onlinebookstore.war ${tomcatUrl}/manager/text/deploy?path=/onlinebookstore&update=true"
+                    def warFile = sh(script: "find target/ -name '${warFileName}' -type f", returnStdout: true).trim()
+
+                    if (warFile) {
+                        sh "curl --user tomcat-user:tomcat-password --upload-file ${warFile} ${tomcatUrl}/manager/text/deploy?path=/onlinebookstore&update=true"
+                    } else {
+                        error("WAR file not found")
+                    }
                 }
             }
         }
@@ -33,7 +41,10 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment successful'
+            echo 'Deployment to Tomcat successful'
+        }
+        failure {
+            echo 'Deployment to Tomcat failed'
         }
     }
 }
