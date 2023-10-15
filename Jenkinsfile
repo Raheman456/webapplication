@@ -24,7 +24,7 @@ pipeline {
          [
              artifactId: 'onlinebookstore', 
              classifier: '', 
-             file: 'target/onlinestore.war', 
+             file: '/var/lib/jenkins/workspace/webapplication/target/onlinebookstore.war', 
              type: 'war'
                     ]
         ], 
