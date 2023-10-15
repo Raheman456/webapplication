@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        // Name should match the one you configured in the Global Tool Configuration
+        maven 'Maven'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -10,12 +15,9 @@ pipeline {
 
         stage('Build') {
             steps {
-                script {
-                    def mavenHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
-                    sh "${mavenHome}/bin/mvn clean package"
-                }
-            }
+                sh 'mvn clean install'
         }
+    }
         stage('Publish to Nexus') {
     steps {
         script {
