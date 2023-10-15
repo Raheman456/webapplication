@@ -20,42 +20,23 @@ pipeline {
     }
         stage('Publish to Nexus') {
     steps {
-        script {
-            def nexusUrl = 'http://3.27.185.94:8081'  // Corrected Nexus URL
-            def nexusRepository = 'webapplication'  // Replace with your Nexus repository
-            def nexusCredentialsId = 'nexus'  // Jenkins credentials for Nexus
-
-            def artifactVersion
-            def artifactFile
-
-            // Try to retrieve the version and artifact file
-            try {
-                artifactVersion = sh(script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
-                artifactFile = sh(script: 'find target/ -name "*.war" -type f', returnStdout: true).trim()
-            } catch (Exception e) {
-                error("Failed to retrieve version and artifact file: ${e.message}")
-            }
-
-            // Check if version and artifact file were successfully obtained
-            if (artifactVersion && artifactFile) {
-                nexusArtifactUploader(
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    nexusUrl: nexusUrl,
-                    groupId: 'onlinebookstore',
-                    version: "${artifactVersion}",
-                    repository: nexusRepository,
-                    credentialsId: nexusCredentialsId,
-                    artifacts: [
-                        [artifactId: 'onlinebookstore', classifier: '', file: artifactFile]
+        nexusArtifactUploader artifacts: [
+         [
+             artifactId: 'onlinebookstore', 
+             classifier: '', 
+             file: 'target/onlinestore.war', 
+             type: 'war'
                     ]
-                )
-            } else {
-                error("Version or artifact file not found")
-            }
-        }
+        ], 
+            credentialsId: 'nexus', 
+            groupId: 'onlinebookstore', 
+            nexusUrl: '13.211.150.37:8081', 
+            nexusVersion: 'nexus3', 
+            protocol: 'http', 
+            repository: 'webapplication', 
+            version: '0.0.1-SNAPSHOT'
     }
-}
+        }
 
         stage('Deploy to Tomcat') {
             steps {
