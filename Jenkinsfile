@@ -30,7 +30,7 @@ pipeline {
         ], 
             credentialsId: 'nexus', 
             groupId: 'onlinebookstore', 
-            nexusUrl: '13.211.150.37:8081', 
+            nexusUrl: '13.210.66.103:8081', 
             nexusVersion: 'nexus3', 
             protocol: 'http', 
             repository: 'webapplication', 
@@ -41,7 +41,7 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 script {
-                    def tomcatUrl = 'http://3.27.185.94:8082/'  // Replace with your Tomcat URL
+                    def tomcatUrl = 'http://13.210.66.103:8082/'  // Replace with your Tomcat URL
                     def tomcatManagerCredentialsId = 'Tomcat'  // Jenkins credentials for Tomcat Manager
                     def warFileName = 'target/onlinebookstore.war'  // The path to your WAR file
 
