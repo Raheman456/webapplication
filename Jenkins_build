@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+
+    tools {
+        // Name should match the one you configured in the Global Tool Configuration
+        maven 'Maven'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean install'
+        }
+    }
