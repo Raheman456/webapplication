@@ -1,22 +1,43 @@
-pipeline {
-    agent any
-
-    tools {
-        // Name should match the one you configured in the Global Tool Configuration
-        maven 'Maven'
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'mvn clean install'
-            }
-        }
-    }
+pipeline{
+   agent any
+   
+    stages{
+       stage('scm'){
+         steps {
+            checkout scm
+          }
+      }
+       stage('build'){
+          steps{
+           sh 'mvn clean install'
+         }
+      }
+       stage('nexus'){
+        steps{
+          nexusArtifactUploader artifacts: [
+	[
+	artifactId: 'onlinebookstore', 
+	classifier: '', 
+	file: '/var/lib/jenkins/workspace/webapp/target/onlinebookstore.war', 
+	type: 'war']
+	], 
+	credentialsId: 'Nexus', 
+	groupId: 'onlinebookstore', 
+	nexusUrl: '44.203.56.60:8081', 
+	nexusVersion: 'nexus3', 
+	protocol: 'http', 
+	repository: 'webapplication', 
+	version: '0.0.1-SNAPSHOT'
+	}
+     }
+       stage('deploy'){
+        steps{
+       deploy adapters: [
+	tomcat9(credentialsId: 'Tomcat', path: '', url: 'http://54.152.186.128:8090/')
+	], 
+	contextPath: null, 
+	war: '**/*.war'
+	}
+      }
+   }
 }
